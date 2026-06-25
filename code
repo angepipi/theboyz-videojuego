@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheBoyZ · Problemáticas en Videojuegos Online</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #070b15;
+            color: #e0e6f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070b15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d4ff, #7b2ffc);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #7b2ffc, #ff6b6b);
+        }
+
+        /* ===== FONDO ANIMADO ===== */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 10% 30%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 70%, rgba(123, 47, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(255, 107, 107, 0.05) 0%, transparent 40%);
+        }
+
+        /* ===== PARTÍCULAS FLOTANTES (CSS) ===== */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-duration: 18s;
+            animation-delay: 0s;
+            width: 3px;
+            height: 3px;
+        }
+        .particle:nth-child(2) {
+            left: 25%;
+            animation-duration: 22s;
+            animation-delay: 2s;
+            width: 5px;
+            height: 5px;
+        }
+        .particle:nth-child(3) {
+            left: 40%;
+            animation-duration: 20s;
+            animation-delay: 4s;
+            width: 2px;
+            height: 2px;
+        }
+        .particle:nth-child(4) {
+            left: 55%;
+            animation-duration: 25s;
+            animation-delay: 1s;
+            width: 6px;
+            height: 6px;
+            opacity: 0.6;
+        }
+        .particle:nth-child(5) {
+            left: 70%;
+            animation-duration: 19s;
+            animation-delay: 3s;
+            width: 3px;
+            height: 3px;
+        }
+        .particle:nth-child(6) {
+            left: 85%;
+            animation-duration: 23s;
+            animation-delay: 5s;
+            width: 4px;
+            height: 4px;
+        }
+        .particle:nth-child(7) {
+            left: 15%;
+            animation-duration: 21s;
+            animation-delay: 6s;
+            width: 7px;
+            height: 7px;
+            opacity: 0.4;
+        }
+        .particle:nth-child(8) {
+            left: 50%;
+            animation-duration: 26s;
+            animation-delay: 2s;
+            width: 3px;
+            height: 3px;
+        }
+        .particle:nth-child(9) {
+            left: 75%;
+            animation-duration: 17s;
+            animation-delay: 4s;
+            width: 5px;
+            height: 5px;
+        }
+        .particle:nth-child(10) {
+            left: 35%;
+            animation-duration: 24s;
+            animation-delay: 7s;
+            width: 4px;
+            height: 4px;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ===== NAVEGACIÓN ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(7, 11, 21, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .logo span {
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar .logo i {
+            color: #00d4ff;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #8a9bb8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links .nav-btn {
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links .nav-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-links .nav-btn::after {
+            display: none;
+        }
+
+        /* Hamburguesa */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 28px;
+            height: 2px;
+            background: #fff;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 80px 30px 60px;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .main-header .subtitle-top {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 5px;
+            color: #4a5a7a;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .main-header .subtitle-top i {
+            color: #00d4ff;
+        }
+
+        .main-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ffc 50%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 18px;
+            line-height: 1.2;
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-header p {
+            font-size: 1.15rem;
+            color: #8a9bb8;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .main-header p strong {
+            color: #ffffff;
+        }
+
+        .header-badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .header-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            color: #8a9bb8;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-badge i {
+            color: #00d4ff;
+        }
+
+        /* ===== GRID DE TARJETAS ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        /* ===== TARJETA INDIVIDUAL ===== */
+        .card {
+            background: linear-gradient(145deg, rgba(18, 26, 45, 0.92), rgba(10, 16, 30, 0.96));
+            border-radius: 28px;
+            padding: 35px 30px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+            opacity: 0.8;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--accent-color), transparent 70%);
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Colores por tipo */
+        .card-robo {
+            --accent-color: #ff4757;
+            --accent-secondary: #ff6b81;
+        }
+
+        .card-toxicidad {
+            --accent-color: #ffa502;
+            --accent-secondary: #eccc68;
+        }
+
+        /* ===== HEADER DE TARJETA ===== */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .card-icon {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.05) rotate(-5deg);
+        }
+
+        .card-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #ffffff;
+        }
+
+        .card-header .badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 14px;
+            border-radius: 40px;
+            background: var(--accent-color);
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        /* ===== DESCRIPCIÓN ===== */
+        .card-desc {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #b0c0d8;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .card-desc strong {
+            color: #ffffff;
+        }
+
+        /* ===== LISTA DE CONSECUENCIAS ===== */
+        .consecuencias {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 22px 0;
+        }
+
+        .consecuencias li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #c8d4e8;
+            transition: all 0.3s ease;
+        }
+
+        .consecuencias li:hover {
+            padding-left: 8px;
+            color: #ffffff;
+        }
+
+        .consecuencias li:last-child {
+            border-bottom: none;
+        }
+
+        .consecuencias li .li-icon {
+            width: 24px;
+            color: var(--accent-color);
+            font-size: 1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .consecuencias li strong {
+            color: #ffffff;
+        }
+
+        /* ===== SECCIÓN SOLUCIONES ===== */
+        .soluciones-section {
+            margin-top: 6px;
+        }
+
+        .soluciones-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            margin-bottom: 12px;
+        }
+
+        .soluciones-title i {
+            font-size: 1rem;
+        }
+
+        .soluciones-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .soluciones-grid span {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: 0.82rem;
+            color: #d0dcee;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .soluciones-grid span:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-color);
+            transform: scale(1.04);
+        }
+
+        .soluciones-grid span i {
+            color: var(--accent-color);
+            font-size: 0.75rem;
+        }
+
+        /* ===== FOOTER DE TARJETA ===== */
+        .card-footer {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #6a7f9e;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-footer .stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .card-footer .stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-footer .stats i {
+            color: var(--accent-color);
+        }
+
+        /* ===== SECCIÓN DE GRÁFICOS ===== */
+        .charts-section {
+            margin-top: 60px;
+            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .charts-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .charts-section .subtitle {
+            text-align: center;
+            color: #6a7f9e;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .chart-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 24px 20px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-box h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #c8d4e8;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-box canvas {
+            max-height: 280px;
+            max-width: 100%;
+        }
+
+        /* ===== SECCIÓN DE ESTADÍSTICAS EXTRA ===== */
+        .stats-extra {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .stats-extra .stat-item {
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stats-extra .stat-item:hover {
+            transform: scale(1.05);
+        }
+
+        .stats-extra .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-extra .stat-label {
+            font-size: 0.8rem;
+            color: #6a7f9e;
+            margin-top: 4px;
+        }
+
+        /* ===== SECCIÓN DE RECURSOS / ENLACES ===== */
+        .resources-section {
+            margin-top: 50px;
+            padding: 30px 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .resources-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b0c0d8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .resource-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #00d4ff;
+            transform: translateX(6px);
+            color: #ffffff;
+        }
+
+        .resource-link i {
+            color: #00d4ff;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* ===== FOOTER ===== */
+        .page-footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #2a3a5a;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-footer .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .page-footer .footer-links a {
+            color: #4a5a7a;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .page-footer .footer-links a:hover {
+            color: #00d4ff;
+        }
+
+        .page-footer .footer-social {
+            display: flex;
+            gap: 14px;
+        }
+
+        .page-footer .footer-social a {
+            color: #4a5a7a;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .page-footer .footer-social a:hover {
+            color: #00d4ff;
+            transform: translateY(-3px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .main-header h1 {
+                font-size: 2.4rem;
+            }
+
+            .stats-extra {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(7, 11, 21, 0.98);
+                backdrop-filter: blur(20px);
+                padding: 20px 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                gap: 16px;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-container {
+                padding: 70px 16px 40px;
+            }
+
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-header p {
+                font-size: 0.95rem;
+            }
+
+            .card {
+                padding: 24px 18px 20px;
+            }
+
+            .card-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .card-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.4rem;
+            }
+
+            .stats-extra {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                padding: 20px 14px;
+            }
+
+            .stats-extra .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .charts-section {
+                padding: 24px 14px;
+            }
+
+            .charts-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .page-footer {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-badge-group {
+                gap: 10px;
+            }
+
+            .header-badge {
+                font-size: 0.7rem;
+                padding: 6px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== FONDO ===== -->
+    <div class="bg-particles"></div>
+    <div class="particles-container">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- ===== NAVEGACIÓN ===== -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-gamepad"></i>
+            <span>TheBoyZ</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#robo">Robo de cuentas</a></li>
+            <li><a href="#toxicidad">Toxicidad</a></li>
+            <li><a href="#estadisticas">Estadísticas</a></li>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#contacto" class="nav-btn">Contacto</a></li>
+        </ul>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="main-container" id="inicio">
+
+        <!-- ===== HEADER ===== -->
+        <header class="main-header">
+            <div class="subtitle-top"><i class="fas fa-chevron-right"></i> &nbsp; INVESTIGACIÓN THEBOYZ &nbsp; <i class="fas fa-chevron-left"></i></div>
+            <h1>Videojuegos Online:<br />Diversión, Gastos y Toxicidad</h1>
+            <p>
+                Exploramos dos de las problemáticas más graves en el mundo gaming:
+                el <strong>robo de cuentas</strong> en mercados negros y la
+                <strong>toxicidad</strong> (machismo, agresividad e insultos)
+                que ocurre a través de los micrófonos.
+            </p>
+            <div class="header-badge-group">
+                <span class="header-badge"><i class="fas fa-users"></i> 4 integrantes</span>
+                <span class="header-badge"><i class="fas fa-calendar"></i> 2025</span>
+                <span class="header-badge"><i class="fas fa-tag"></i> TheBoyZ</span>
+            </div>
+        </header>
+
+        <!-- ===== GRID DE TARJETAS ===== -->
+        <div class="cards-grid" id="robo">
+
+            <!-- ============================================================ -->
+            <!-- TARJETA 1: ROBO DE CUENTAS                                     -->
+            <!-- ============================================================ -->
+            <div class="card card-robo">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+                    <div>
+                        <h2>Robo de cuentas</h2>
+                        <span class="badge">Mercado negro</span>
+                    </div>
+                </div>
+
+                <div class="card-desc">
+                    <strong><i class="fas fa-skull-crosswalk" style="color:var(--accent-color);"></i> ¿Qué ocurre?</strong>
+                    Delincuentes informáticos sustraen cuentas de jugadores con alto nivel,
+                    objetos raros o gran inversión de tiempo y dinero, para venderlas
+                    ilegalmente en plataformas no oficiales.
+                </div>
+
+                <ul class="consecuencias">
+                    <li>
+                        <span class="li-icon"><i class="fas fa-coins"></i></span>
+                        <div><strong>Pérdida económica y emocional</strong> — El jugador pierde el dinero invertido en skins, armas y pases, además del tiempo y esfuerzo dedicado.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-user-lock"></i></span>
+                        <div><strong>Falta de seguridad digital</strong> — Muchos jóvenes no utilizan verificación en dos pasos ni contraseñas robustas, facilitando el robo.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-store-alt"></i></span>
+                        <div><strong>Fomento de la economía ilegal</strong> — Este comercio negro no tributa ni garantiza derechos a los jugadores, alimentando un mercado paralelo.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-users-slash"></i></span>
+                        <div><strong>Daño a la comunidad</strong> — Jugadores inexpertos compran cuentas de alto nivel y arruinan la experiencia competitiva de otros.</div>
+                    </li>
+                </ul>
+
+                <div class="soluciones-section">
+                    <div class="soluciones-title">
+                        <i class="fas fa-lightbulb"></i> Soluciones clave
+                    </div>
+                    <div class="soluciones-grid">
+                        <span><i class="fas fa-key"></i> Contraseñas seguras</span>
+                        <span><i class="fas fa-mobile-alt"></i> Autenticación 2FA</span>
+                        <span><i class="fas fa-ban"></i> No compartir datos</span>
+                        <span><i class="fas fa-flag"></i> Denunciar ventas ilegales</span>
+                        <span><i class="fas fa-shield-alt"></i> Cambiar contraseña periódicamente</span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="stats">
+                        <span><i class="fas fa-database"></i> 70% de cuentas robadas no tienen 2FA</span>
+                    </div>
+                    <span><i class="fas fa-external-link-alt"></i> Fuente: Kaspersky 2024</span>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- TARJETA 2: MACHISMO Y AGRESIVIDAD                             -->
+            <!-- ============================================================ -->
+            <div class="card card-toxicidad" id="toxicidad">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-microphone-alt"></i></div>
+                    <div>
+                        <h2>Machismo &amp; Agresividad</h2>
+                        <span class="badge">Toxicidad en voz</span>
+                    </div>
+                </div>
+
+                <div class="card-desc">
+                    <strong><i class="fas fa-exclamation-triangle" style="color:var(--accent-color);"></i> El problema:</strong>
+                    Insultos, amenazas, comentarios sexistas, homofóbicos y
+                    discriminatorios que se expresan a través de los micrófonos
+                    durante las partidas online, creando un ambiente hostil.
+                </div>
+
+                <ul class="consecuencias">
+                    <li>
+                        <span class="li-icon"><i class="fas fa-venus-mars"></i></span>
+                        <div><strong>Exclusión y discriminación</strong> — Las jugadoras son víctimas frecuentes de acoso verbal, lo que las lleva a ocultar su identidad o abandonar juegos.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-brain"></i></span>
+                        <div><strong>Estrés y ansiedad</strong> — La exposición constante a la agresividad afecta la salud mental, especialmente en adolescentes y jóvenes.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-repeat"></i></span>
+                        <div><strong>Normalización de la violencia verbal</strong> — Los jóvenes pueden llegar a considerar normal insultar o menospreciar a otros, replicando estas conductas fuera del juego.</div>
+                    </li>
+                    <li>
+                        <span class="li-icon"><i class="fas fa-frown"></i></span>
+                        <div><strong>Mal ambiente competitivo</strong> — La toxicidad reduce la calidad de la experiencia de juego y puede alejar a jugadores talentosos.</div>
+                    </li>
+                </ul>
+
+                <div class="soluciones-section">
+                    <div class="soluciones-title">
+                        <i class="fas fa-lightbulb"></i> Soluciones clave
+                    </div>
+                    <div class="soluciones-grid">
+                        <span><i class="fas fa-gavel"></i> Códigos de conducta</span>
+                        <span><i class="fas fa-exclamation-triangle"></i> Reportes y sanciones</span>
+                        <span><i class="fas fa-handshake"></i> Cultura de respeto</span>
+                        <span><i class="fas fa-volume-mute"></i> Silenciar / filtrar chat</span>
+                        <span><i class="fas fa-flag"></i> Denunciar a la plataforma</span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="stats">
+                        <span><i class="fas fa-database"></i> 65% de mujeres gamers han sufrido acoso</span>
+                    </div>
+                    <span><i class="fas fa-external-link-alt"></i> Fuente: ADL 2024</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== ESTADÍSTICAS EXTRA ===== -->
+        <div class="stats-extra" id="estadisticas">
+            <div class="stat-item">
+                <div class="stat-number">70%</div>
+                <div class="stat-label">Cuentas robadas sin 2FA</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">65%</div>
+                <div class="stat-label">Mujeres gamers han sufrido acoso</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">$2B</div>
+                <div class="stat-label">Mercado negro de cuentas (anual)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">40%</div>
+                <div class="stat-label">Jóvenes han abandonado un juego por toxicidad</div>
+            </div>
+        </div>
+
+        <!-- ===== SECCIÓN DE GRÁFICOS ===== -->
+        <div class="charts-section">
+            <h2><i class="fas fa-chart-bar"></i> Datos Estadísticos</h2>
+            <p class="subtitle">Visualización de las problemáticas en la comunidad gamer</p>
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3>Robo de cuentas por plataforma</h3>
+                    <canvas id="chartRobo"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Tipos de toxicidad en partidas</h3>
+                    <canvas id="chartToxicidad"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECCIÓN DE RECURSOS ===== -->
+        <div class="resources-section" id="recursos">
+            <h2><i class="fas fa-link"></i> Recursos y Referencias</h2>
+            <div class="resources-grid">
+                <a href="#" class="resource-link">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Estudio completo (PDF)</span>
+                </a>
+                <a href="#" class="resource-link">
+                    <i class="fas fa-video"></i>
+                    <span>Video explicativo</span>
+                </a>
+                <a href="#" class="resource-link">
+                    <i class="fas fa-book"></i>
+                    <span>Bibliografía</span>
+                </a>
+                <a href="#" class="resource-link">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Guía de seguridad</span>
+                </a>
+                <a href="#" class="resource-link">
+                    <i class="fas fa-flag"></i>
+                    <span>Denunciar acoso</span>
+                </a>
+                <a href="#" class="resource-link">
+                    <i class="fas fa-users"></i>
+                    <span>Comunidad TheBoyZ</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="page-footer" id="contacto">
+            <span>
+                <i class="fas fa-code"></i> Desarrollado por <strong>TheBoyZ</strong> · 2025
+            </span>
+            <div class="footer-links">
+                <a href="#">Política de privacidad</a>
+                <a href="#">Términos</a>
+                <a href="#">Contacto</a>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        // ===== MENÚ HAMBURGUESA =====
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // ===== GRÁFICOS CON CHART.JS =====
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Gráfico 1: Robo de cuentas por plataforma
+            const ctx1 = document.getElementById('chartRobo').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Steam', 'Epic Games', 'Riot Games', 'Blizzard', 'Otros'],
+                    datasets: [{
+                        label: 'Cuentas robadas (%)',
+                        data: [32, 24, 18, 14, 12],
+                        backgroundColor: [
+                            'rgba(255, 71, 87, 0.8)',
+                            'rgba(255, 71, 87, 0.6)',
+                            'rgba(255, 71, 87, 0.4)',
+                            'rgba(255, 71, 87, 0.3)',
+                            'rgba(255, 71, 87, 0.2)'
+                        ],
+                        borderColor: '#ff4757',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#8a9bb8',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 40,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#6a7f9e' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#6a7f9e' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico 2: Tipos de toxicidad en partidas
+            const ctx2 = document.getElementById('chartToxicidad').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Insultos', 'Machismo', 'Amenazas', 'Discriminación', 'Acoso'],
+                    datasets: [{
+                        data: [35, 28, 18, 12, 7],
+                        backgroundColor: [
+                            'rgba(255, 165, 2, 0.8)',
+                            'rgba(255, 165, 2, 0.6)',
+                            'rgba(255, 165, 2, 0.4)',
+                            'rgba(255, 165, 2, 0.3)',
+                            'rgba(255, 165, 2, 0.2)'
+                        ],
+                        borderColor: '#ffa502',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#8a9bb8',
+                                font: { size: 12 },
+                                padding: 16
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>
